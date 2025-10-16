@@ -1,15 +1,20 @@
 ALU Spend Wise - Personal Finance Tracker
 
-Design Prototype
+##Design Prototype##
+
 Figma Design: View Full Design Prototype :https://www.figma.com/design/aqZAnQ4eRzDNPMyaBf41xW/summative?node-id=0-1&t=4KUAu86LyUEb6g59-1
 
+## Demo video##
+Link: https://drive.google.com/file/d/1co1m1SuCGnbE017ip6m-2tUiQMnQumZj/view?usp=sharing
+##Description##
 ALU Spend Wise is a modern, responsive web application designed to help students and individuals track their income and expenses effectively. With support for multiple currencies (USD/RWF) and an intuitive interface, it makes personal finance management simple and accessible.
 
-Key Features
+##Key Features##
 Financial Dashboard
 Real-time Overview: Track your current balance, monthly income, expenses, and savings at a glance
 
-Visual Statistics: Color-coded stat cards with hover effects for better user experience
+##Visual Statistics##
+Color-coded stat cards with hover effects for better user experience
 
 Recent Transactions: Quick access to your latest financial activities
 
@@ -28,8 +33,6 @@ Multi-Currency Support: Switch between USD and RWF with custom conversion rates
 Budget Tracking: Set and monitor monthly spending limits
 
 Data Management: Export your financial data as JSON files and import when needed
-
-Theme Options: Toggle between light and dark modes
 
 User Experience
 Responsive Design: Works perfectly on desktop, tablet, and mobile devices
@@ -96,7 +99,7 @@ Monitor your spending against your budget on the dashboard
 
 Data Management
 Exporting Data
-Go to Settings -> Data Management
+G-o to Settings -> Data Management
 
 Click "Export Data" to download a JSON file with all your transactions and settings
 
@@ -127,7 +130,7 @@ HTML5: Semantic structure and accessibility
 
 CSS3: Modern styling with Flexbox and Grid
 
-JavaScript: Client-side functionality and data management
+  JavaScript: Client-side functionality and data management
 
 Local Storage: Persistent data storage in browser
 
@@ -184,4 +187,5 @@ ALU-Spend-Wise/
 │   ├── currency.js        # Currency handling
 │   └── storage.js         # Local storage operations
 └── assets/
+
     └── screenshots/       # Application previews
