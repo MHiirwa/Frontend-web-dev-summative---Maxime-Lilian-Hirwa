@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALU Spend Wise | Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* ===== RESET & BASE STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* ===== HEADER & NAVIGATION ===== */
+        .header {
+            background: #000000; /* Change to solid black background */
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-icon {
+            margin-right: 10px;
+            font-size: 1.8rem;
+        }
+
+        /* Burger Menu */
+        .burger-menu {
+            position: relative;
+            z-index: 100;
+        }
+
+        .burger-icon {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .burger-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .burger-line {
+            height: 4px;
+            width: 100%;
+            background-color: white;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .burger-line:nth-child(2) {
+            width: 80%;
+        }
+
+        .menu-items {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            width: 220px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .burger-menu:hover .menu-items {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .menu-item {
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #333;
+            cursor: pointer;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item:hover {
+            background-color: #2d2d2d;
+            color: #ffffff;
+        }
+
+        .menu-item.active {
+            background-color: #333;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .menu-item i {
+            margin-right: 12px;
+            font-size: 1.2rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .content {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* ===== DASHBOARD CARDS ===== */
+        .dashboard-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            min-width: 200px;
+        }
+
+        .sort-btn {
+            padding: 0.5rem 1rem;
+            background-color: #edf2f7;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .sort-btn:hover {
+            background-color: #e2e8f0;
+        }
+
+        .sort-btn.active {
+            background-color: #6a11cb;
+            color: white;
+        }
+
+        /* ===== STATS GRID ===== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            color: black;
+            padding: 1.5rem;
+            border-radius: 10px;
+            background-color: #f0f0f0; /* grey background */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* added shadow */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Remove the existing gradient backgrounds */
+        .stat-card:nth-child(1),
+        .stat-card:nth-child(2),
+        .stat-card:nth-child(3),
+        .stat-card:nth-child(4) {
+            background: #f0f0f0;
+        }
+
+        /* Add hover effect */
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #2d3748;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        /* ===== TRANSACTIONS ===== */
+        .recent-transactions {
+            margin-top: 2rem;
+        }
+
+        .recent-transactions h3 {
+            margin-bottom: 1rem;
+            color: #2d3748;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            transition: background-color 0.2s;
+        }
+
+        .transaction-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+
+        .transaction-info {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #edf2f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: #4a5568;
+        }
+
+        .transaction-details h4 {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .transaction-details p {
+            font-size: 0.85rem;
+            color: #718096;
+        }
+
+        .transaction-amount {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-right: 1rem;
+        }
+
+        .transaction-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .transaction-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .transaction-actions button:hover {
+            background-color: #f0f0f0;
+        }
+
+        .transaction-actions .edit-btn {
+            color: #4299e1;
+        }
+
+        .transaction-actions .delete-btn {
+            color: #e53e3e;
+        }
+
+        .transaction-amount.income { color: #38a169; }
+        .transaction-amount.expense { color: #e53e3e; }
+
+        /* ===== FORMS ===== */
+        .transaction-form {
+            max-width: 500px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #6a11cb;
+            box-shadow: 0 0 0 3px rgba(106, 17, 203, 0.1);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* ===== SETTINGS ===== */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .form-section {
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .form-section h3 {
+            margin-bottom: 1rem;
+            color: #2d3748;
+        }
+
+        .form-section input,
+        .form-section select {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .action-btn {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .action-btn.danger {
+            background-color: #fed7d7;
+            color: #c53030;
+        }
+
+        .action-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* ===== ABOUT PAGE ===== */
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .about-hero {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .about-icon {
+            font-size: 4rem;
+            color: #6a11cb;
+            margin-bottom: 1rem;
+        }
+
+        .about-hero h3 {
+            font-size: 2rem;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .about-tagline {
+            font-size: 1.2rem;
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .about-features {
+            margin-bottom: 3rem;
+        }
+
+        .about-features h4 {
+            font-size: 1.5rem;
+            color: #2d3748;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .about-features ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .about-features li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .about-features li i {
+            color: #6a11cb;
+            margin-right: 0.5rem;
+        }
+
+        .about-contact {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border-radius: 10px;
+        }
+
+        .about-contact h4 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .about-contact p {
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+
+        /* ===== MODAL STYLES ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #2d3748;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #718096;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .cancel-btn {
+            background-color: #e2e8f0;
+            color: #4a5568;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            flex: 1;
+        }
+
+        .cancel-btn:hover {
+            background-color: #cbd5e0;
+        }
+
+        /* ===== UTILITY COMPONENTS ===== */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #718096;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            background-color: #38a169;
+            color: white;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.error {
+            background-color: #e53e3e;
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+            
+            .content {
+                padding: 0 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                width: 100%;
+            }
+            
+            .search-input {
+                min-width: 100%;
+            }
+            
+            .transaction-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .transaction-amount {
+                margin-right: 0;
+            }
+            
+            .theme-toggle {
+                margin-top: 1rem;
+                text-align: center;
+            }
+            
+            /* About Page Mobile */
+            .about-hero h3 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            ALU Spend Wise
+        </div>
+        
+        <div class="burger-menu">
+            <div class="burger-icon">
+                <div class="burger-line"></div>
+                <div class="burger-line"></div>
+                <div class="burger-line"></div>
+            </div>
+            
+            <div class="menu-items">
+                <a href="#" class="menu-item active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    Dashboard
+                </a>
+                <a href="#" class="menu-item" data-section="transactions">
+                    <i class="fas fa-exchange-alt"></i>
+                    Transactions
+                </a>
+                <a href="#" class="menu-item" data-section="add-transaction">
+                    <i class="fas fa-plus-circle"></i>
+                    Add Transaction
+                </a>
+                <a href="#" class="menu-item" data-section="settings">
+                    <i class="fas fa-cog"></i>
+                    Settings
+                </a>
+                <a href="#" class="menu-item" data-section="about">
+                    <i class="fas fa-info-circle"></i>
+                    About
+                </a>
+            </div>
+        </div>
+        
+       
+    </header>
+
+    <main class="content">
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section active">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2 class="card-title">Financial Overview</h2>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="current-balance">$0.00</div>
+                        <div class="stat-label">Current Balance</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="monthly-income">$0.00</div>
+                        <div class="stat-label">Monthly Deposit</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="monthly-expenses">$0.00</div>
+                        <div class="stat-label">Monthly Expenses</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="monthly-savings">$0.00</div>
+                        <div class="stat-label">Monthly Savings</div>
+                    </div>
+                </div>
+                
+                <div class="recent-transactions">
+                    <h3>Recent Transactions</h3>
+                    <div id="recent-transactions-list">
+                        <!-- Transactions will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Transactions Section -->
+        <section id="transactions" class="section">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2 class="card-title">All Transactions</h2>
+                    <div class="controls">
+                        <input type="text" id="search-input" placeholder="Search transactions..." class="search-input">
+                        <button id="sort-date" class="sort-btn">Sort by Date</button>
+                        <button id="sort-amount" class="sort-btn">Sort by Amount</button>
+                    </div>
+                </div>
+                <div id="transactions-list">
+                    <!-- All transactions will be populated here -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Add Transaction Section -->
+        <section id="add-transaction" class="section">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2 class="card-title">Add New Transaction</h2>
+                </div>
+                <form id="transaction-form" class="transaction-form">
+                    <div class="form-group">
+                        <label for="transaction-type">Transaction Type</label>
+                        <select id="transaction-type" required>
+                            <option value="">Select type</option>
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <input type="text" id="description" placeholder="Enter description" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="amount">Amount</label>
+                        <input type="number" id="amount" step="0.01" min="0.01" placeholder="0.00" required>
+                        <small class="currency-note">Amount in your base currency</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="category">Category</label>
+                        <select id="category" required>
+                            <option value="">Select category</option>
+                            <option value="Food">Food</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Transportation">Transportation</option>
+                            <option value="Education">Education</option>
+                            <option value="Housing">Housing</option>
+                            <option value="Income">Income</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <input type="date" id="date" required>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">Add Transaction</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="settings" class="section">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2 class="card-title">Settings</h2>
+                </div>
+                <div class="settings-grid">
+                    <div class="form-section">
+                        <h3>Currency Settings</h3>
+                        <div class="form-group">
+                            <label for="base-currency">Base Currency</label>
+                            <select id="base-currency">
+                                <option value="USD">USD - US Dollar</option>
+                                <option value="RWF">RWF - Rwandan Franc</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="conversion-rate-rwf">RWF to USD Rate</label>
+                            <input type="number" id="conversion-rate-rwf" step="0.0001" min="0.0001" placeholder="e.g., 1200 for 1 USD = 1200 RWF">
+                            <small>Current rate: 1 USD = <span id="current-rate">1200</span> RWF</small>
+                        </div>
+                        
+                        <button id="save-currency" class="action-btn">Save Currency Settings</button>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>Budget Settings</h3>
+                        <div class="form-group">
+                            <label for="monthly-budget">Monthly Budget</label>
+                            <input type="number" id="monthly-budget" placeholder="Enter monthly budget">
+                        </div>
+                        <button id="save-budget" class="action-btn">Save Budget</button>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>Data Management</h3>
+                        <button id="export-data" class="action-btn">Export Data</button>
+                        <input type="file" id="import-file" accept=".json" style="display: none;">
+                        <button id="import-data" class="action-btn secondary">Import Data</button>
+                        <button id="clear-data" class="action-btn danger">Clear All Data</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="section">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h2 class="card-title">About ALU Spend Wise</h2>
+                </div>
+                
+                <div class="about-content">
+                    <div class="about-hero">
+                        <h3>ALU Spend Wise</h3>
+                        <p class="about-tagline">Your personal finance tracker for smart money management</p>
+                    </div>
+
+                    <div class="about-features">
+                        <h4>Key Features</h4>
+                        <ul>
+                            <li><i class="fas fa-check"></i> Track income and expenses</li>
+                            <li><i class="fas fa-check"></i> Multi-currency support (USD/RWF)</li>
+                            <li><i class="fas fa-check"></i> Real-time financial dashboard</li>
+                            <li><i class="fas fa-check"></i> Easy transaction management</li>
+                        </ul>
+                    </div>
+
+                    <div class="about-contact">
+                        <h4>Contact</h4>
+                        <p>For support: support@aluspendwise.com</p>
+            
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Edit Transaction Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Transaction</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-form">
+                    <input type="hidden" id="edit-id">
+                    <div class="form-group">
+                        <label for="edit-transaction-type">Transaction Type</label>
+                        <select id="edit-transaction-type" required>
+                            <option value="">Select type</option>
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-description">Description</label>
+                        <input type="text" id="edit-description" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-amount">Amount</label>
+                        <input type="number" id="edit-amount" step="0.01" min="0.01" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-category">Category</label>
+                        <select id="edit-category" required>
+                            <option value="">Select category</option>
+                            <option value="Food">Food</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Transportation">Transportation</option>
+                            <option value="Education">Education</option>
+                            <option value="Housing">Housing</option>
+                            <option value="Income">Income</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-date">Date</label>
+                        <input type="date" id="edit-date" required>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="submit-btn">Save Changes</button>
+                        <button type="button" class="cancel-btn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Application state
+        const state = {
+            transactions: [],
+            settings: {
+                baseCurrency: 'USD',
+                conversionRate: 1200,
+                monthlyBudget: 0
+            },
+            currentSort: {
+                field: 'date',
+                direction: 'desc'
+            }
+        };
+
+        // DOM Elements
+        const elements = {
+            // Navigation
+            menuItems: document.querySelectorAll('.menu-item'),
+            sections: document.querySelectorAll('.section'),
+            
+            // Dashboard
+            currentBalance: document.getElementById('current-balance'),
+            monthlyIncome: document.getElementById('monthly-income'),
+            monthlyExpenses: document.getElementById('monthly-expenses'),
+            monthlySavings: document.getElementById('monthly-savings'),
+            recentTransactionsList: document.getElementById('recent-transactions-list'),
+            
+            // Transactions
+            transactionsList: document.getElementById('transactions-list'),
+            searchInput: document.getElementById('search-input'),
+            sortDateBtn: document.getElementById('sort-date'),
+            sortAmountBtn: document.getElementById('sort-amount'),
+            
+            // Add Transaction
+            transactionForm: document.getElementById('transaction-form'),
+            transactionType: document.getElementById('transaction-type'),
+            description: document.getElementById('description'),
+            amount: document.getElementById('amount'),
+            category: document.getElementById('category'),
+            date: document.getElementById('date'),
+            
+            // Settings
+            baseCurrency: document.getElementById('base-currency'),
+            conversionRateRwf: document.getElementById('conversion-rate-rwf'),
+            currentRate: document.getElementById('current-rate'),
+            monthlyBudget: document.getElementById('monthly-budget'),
+            saveCurrency: document.getElementById('save-currency'),
+            saveBudget: document.getElementById('save-budget'),
+            exportData: document.getElementById('export-data'),
+            importData: document.getElementById('import-data'),
+            importFile: document.getElementById('import-file'),
+            clearData: document.getElementById('clear-data'),
+            
+            // Edit Modal
+            editModal: document.getElementById('edit-modal'),
+            editForm: document.getElementById('edit-form'),
+            editId: document.getElementById('edit-id'),
+            editTransactionType: document.getElementById('edit-transaction-type'),
+            editDescription: document.getElementById('edit-description'),
+            editAmount: document.getElementById('edit-amount'),
+            editCategory: document.getElementById('edit-category'),
+            editDate: document.getElementById('edit-date'),
+            closeModal: document.querySelector('.close-modal'),
+            cancelBtn: document.querySelector('.cancel-btn')
+        };
+
+        // Initialize the application
+        function init() {
+            loadData();
+            setupEventListeners();
+            updateUI();
+            setDefaultDate();
+        }
+
+        // Load data from localStorage
+        function loadData() {
+            const savedTransactions = localStorage.getItem('transactions');
+            const savedSettings = localStorage.getItem('settings');
+            
+            if (savedTransactions) {
+                state.transactions = JSON.parse(savedTransactions);
+            }
+            
+            if (savedSettings) {
+                state.settings = { ...state.settings, ...JSON.parse(savedSettings) };
+            }
+            
+            // Update UI with loaded settings
+            elements.baseCurrency.value = state.settings.baseCurrency;
+            elements.conversionRateRwf.value = state.settings.conversionRate;
+            elements.currentRate.textContent = state.settings.conversionRate;
+            elements.monthlyBudget.value = state.settings.monthlyBudget;
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('transactions', JSON.stringify(state.transactions));
+            localStorage.setItem('settings', JSON.stringify(state.settings));
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Navigation
+            elements.menuItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    switchSection(item.dataset.section);
+                });
+            });
+            
+            // Transaction Form
+            elements.transactionForm.addEventListener('submit', handleAddTransaction);
+            
+            // Search and Sort
+            elements.searchInput.addEventListener('input', updateTransactionsList);
+            elements.sortDateBtn.addEventListener('click', () => sortTransactions('date'));
+            elements.sortAmountBtn.addEventListener('click', () => sortTransactions('amount'));
+            
+            // Settings
+            elements.saveCurrency.addEventListener('click', saveCurrencySettings);
+            elements.saveBudget.addEventListener('click', saveBudgetSettings);
+            elements.exportData.addEventListener('click', exportData);
+            elements.importData.addEventListener('click', () => elements.importFile.click());
+            elements.importFile.addEventListener('change', importData);
+            elements.clearData.addEventListener('click', clearAllData);
+            
+            // Edit Modal
+            elements.editForm.addEventListener('submit', handleEditTransaction);
+            elements.closeModal.addEventListener('click', closeEditModal);
+            elements.cancelBtn.addEventListener('click', closeEditModal);
+            elements.editModal.addEventListener('click', (e) => {
+                if (e.target === elements.editModal) {
+                    closeEditModal();
+                }
+            });
+            
+            // Theme toggle
+            const themeToggleBtn = document.getElementById('theme-toggle-btn');
+            themeToggleBtn.addEventListener('click', toggleTheme);
+        }
+
+        // Switch between sections
+        function switchSection(sectionId) {
+            // Update active menu item
+            elements.menuItems.forEach(item => {
+                item.classList.toggle('active', item.dataset.section === sectionId);
+            });
+            
+            // Show active section
+            elements.sections.forEach(section => {
+                section.classList.toggle('active', section.id === sectionId);
+            });
+        }
+
+        // Set default date to today
+        function setDefaultDate() {
+            const today = new Date().toISOString().split('T')[0];
+            elements.date.value = today;
+        }
+
+        // Handle adding a new transaction
+        function handleAddTransaction(e) {
+            e.preventDefault();
+            
+            const transaction = {
+                id: Date.now().toString(),
+                type: elements.transactionType.value,
+                description: elements.description.value,
+                amount: parseFloat(elements.amount.value),
+                category: elements.category.value,
+                date: elements.date.value
+            };
+            
+            state.transactions.push(transaction);
+            saveData();
+            updateUI();
+            
+            // Reset form
+            elements.transactionForm.reset();
+            setDefaultDate();
+            
+            // Show success message
+            showNotification('Transaction added successfully!');
+            
+            // Switch to transactions view
+            switchSection('transactions');
+        }
+
+        // Handle editing a transaction
+        function handleEditTransaction(e) {
+            e.preventDefault();
+            
+            const transactionId = elements.editId.value;
+            const transactionIndex = state.transactions.findIndex(t => t.id === transactionId);
+            
+            if (transactionIndex !== -1) {
+                state.transactions[transactionIndex] = {
+                    ...state.transactions[transactionIndex],
+                    type: elements.editTransactionType.value,
+                    description: elements.editDescription.value,
+                    amount: parseFloat(elements.editAmount.value),
+                    category: elements.editCategory.value,
+                    date: elements.editDate.value
+                };
+                
+                saveData();
+                updateUI();
+                closeEditModal();
+                
+                showNotification('Transaction updated successfully!');
+            }
+        }
+
+        // Open edit modal with transaction data
+        function openEditModal(transactionId) {
+            const transaction = state.transactions.find(t => t.id === transactionId);
+            
+            if (transaction) {
+                elements.editId.value = transaction.id;
+                elements.editTransactionType.value = transaction.type;
+                elements.editDescription.value = transaction.description;
+                elements.editAmount.value = transaction.amount;
+                elements.editCategory.value = transaction.category;
+                elements.editDate.value = transaction.date;
+                
+                elements.editModal.style.display = 'flex';
+            }
+        }
+
+        // Close edit modal
+        function closeEditModal() {
+            elements.editModal.style.display = 'none';
+        }
+
+        // Delete a transaction
+        function deleteTransaction(transactionId) {
+            if (confirm('Are you sure you want to delete this transaction?')) {
+                state.transactions = state.transactions.filter(t => t.id !== transactionId);
+                saveData();
+                updateUI();
+                showNotification('Transaction deleted successfully!');
+            }
+        }
+
+        // Sort transactions
+        function sortTransactions(field) {
+            // Toggle direction if clicking the same field
+            if (state.currentSort.field === field) {
+                state.currentSort.direction = state.currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                state.currentSort.field = field;
+                state.currentSort.direction = 'desc';
+            }
+            
+            // Update button states
+            elements.sortDateBtn.classList.toggle('active', field === 'date');
+            elements.sortAmountBtn.classList.toggle('active', field === 'amount');
+            
+            updateTransactionsList();
+        }
+
+        // Update transactions list with current filters and sort
+        function updateTransactionsList() {
+            const searchTerm = elements.searchInput.value.toLowerCase();
+            
+            // Filter transactions
+            let filteredTransactions = state.transactions.filter(transaction => 
+                transaction.description.toLowerCase().includes(searchTerm) ||
+                transaction.category.toLowerCase().includes(searchTerm)
+            );
+            
+            // Sort transactions
+            filteredTransactions.sort((a, b) => {
+                let aValue, bValue;
+                
+                if (state.currentSort.field === 'date') {
+                    aValue = new Date(a.date);
+                    bValue = new Date(b.date);
+                } else {
+                    aValue = a.amount;
+                    bValue = b.amount;
+                }
+                
+                if (state.currentSort.direction === 'asc') {
+                    return aValue > bValue ? 1 : -1;
+                } else {
+                    return aValue < bValue ? 1 : -1;
+                }
+            });
+            
+            renderTransactionsList(filteredTransactions, elements.transactionsList);
+        }
+
+        // Render transactions to a list element
+        function renderTransactionsList(transactions, listElement) {
+            if (transactions.length === 0) {
+                listElement.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-receipt"></i>
+                        <p>No transactions found</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            listElement.innerHTML = transactions.map(transaction => `
+                <div class="transaction-item">
+                    <div class="transaction-info">
+                        <div class="transaction-icon">
+                            <i class="fas ${transaction.type === 'income' ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
+                        </div>
+                        <div class="transaction-details">
+                            <h4>${transaction.description}</h4>
+                            <p>${transaction.category} • ${formatDate(transaction.date)}</p>
+                        </div>
+                    </div>
+                    <div class="transaction-amount ${transaction.type}">
+                        ${transaction.type === 'income' ? '+' : '-'}${formatCurrency(transaction.amount)}
+                    </div>
+                    <div class="transaction-actions">
+                        <button class="edit-btn" onclick="openEditModal('${transaction.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="delete-btn" onclick="deleteTransaction('${transaction.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update the entire UI
+        function updateUI() {
+            updateDashboard();
+            updateTransactionsList();
+            
+            // Update recent transactions (last 5)
+            const recentTransactions = [...state.transactions]
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 5);
+            
+            renderTransactionsList(recentTransactions, elements.recentTransactionsList);
+        }
+
+        // Update dashboard statistics
+        function updateDashboard() {
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            
+            const monthlyTransactions = state.transactions.filter(transaction => {
+                const transactionDate = new Date(transaction.date);
+                return transactionDate.getMonth() === currentMonth && 
+                       transactionDate.getFullYear() === currentYear;
+            });
+            
+            const monthlyIncome = monthlyTransactions
+                .filter(t => t.type === 'income')
+                .reduce((sum, t) => sum + t.amount, 0);
+                
+            const monthlyExpenses = monthlyTransactions
+                .filter(t => t.type === 'expense')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const totalIncome = state.transactions
+                .filter(t => t.type === 'income')
+                .reduce((sum, t) => sum + t.amount, 0);
+                
+            const totalExpenses = state.transactions
+                .filter(t => t.type === 'expense')
+                .reduce((sum, t) => sum + t.amount, 0);
+            
+            const currentBalance = totalIncome - totalExpenses;
+            const monthlySavings = monthlyIncome - monthlyExpenses;
+            
+            elements.currentBalance.textContent = formatCurrency(currentBalance);
+            elements.monthlyIncome.textContent = formatCurrency(monthlyIncome);
+            elements.monthlyExpenses.textContent = formatCurrency(monthlyExpenses);
+            elements.monthlySavings.textContent = formatCurrency(monthlySavings);
+        }
+
+        // Format currency based on settings
+        function formatCurrency(amount) {
+            const symbol = state.settings.baseCurrency === 'USD' ? '$' : 'RWF ';
+            return `${symbol}${amount.toFixed(2)}`;
+        }
+
+        // Format date for display
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+
+        // Show notification
+        function showNotification(message, isError = false) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${isError ? 'error' : ''}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Settings functions
+        function saveCurrencySettings() {
+            state.settings.baseCurrency = elements.baseCurrency.value;
+            state.settings.conversionRate = parseFloat(elements.conversionRateRwf.value) || 1200;
+            
+            saveData();
+            updateUI();
+            showNotification('Currency settings saved!');
+        }
+
+        function saveBudgetSettings() {
+            state.settings.monthlyBudget = parseFloat(elements.monthlyBudget.value) || 0;
+            saveData();
+            showNotification('Budget settings saved!');
+        }
+
+        function exportData() {
+            const data = {
+                transactions: state.transactions,
+                settings: state.settings
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'aluspend-wise-data.json';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            showNotification('Data exported successfully!');
+        }
+
+        function importData(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    
+                    if (data.transactions && data.settings) {
+                        state.transactions = data.transactions;
+                        state.settings = data.settings;
+                        saveData();
+                        updateUI();
+                        
+                        // Update settings UI
+                        elements.baseCurrency.value = state.settings.baseCurrency;
+                        elements.conversionRateRwf.value = state.settings.conversionRate;
+                        elements.currentRate.textContent = state.settings.conversionRate;
+                        elements.monthlyBudget.value = state.settings.monthlyBudget;
+                        
+                        showNotification('Data imported successfully!');
+                    } else {
+                        showNotification('Invalid data file', true);
+                    }
+                } catch (error) {
+                    showNotification('Error importing data', true);
+                    console.error(error);
+                }
+            };
+            reader.readAsText(file);
+            
+            // Reset file input
+            e.target.value = '';
+        }
+
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+                state.transactions = [];
+                saveData();
+                updateUI();
+                showNotification('All data cleared!');
+            }
+        }
+
+        // Toggle theme between light and dark mode
+        function toggleTheme() {
+            const isDarkMode = document.body.classList.toggle('dark-mode');
+            
+            const themeText = isDarkMode ? 'Light Mode' : 'Dark Mode';
+            const iconClass = isDarkMode ? 'fa-sun' : 'fa-moon';
+            
+            document.getElementById('theme-toggle-btn').innerHTML = `
+                <i class="fas ${iconClass}"></i>
+                <span class="theme-text">${themeText}</span>
+            `;
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+
+        // Dark Mode Implementation
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        document.body.classList.add('dark-mode');
+        updateThemeToggle(true);
+    }
+}
+
+function toggleTheme() {
+    const isDark = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    updateThemeToggle(isDark);
+}
+
+function updateThemeToggle(isDark) {
+    const toggleBtn = document.getElementById('theme-toggle-btn');
+    const icon = toggleBtn.querySelector('i');
+    const text = toggleBtn.querySelector('.theme-text');
+    
+    icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+    text.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+}
+
+// Add to your existing setupEventListeners function
+document.getElementById('theme-toggle-btn').addEventListener('click', toggleTheme);
+
+// Add to your existing init function
+initTheme();
+        
+    </script>
+</body>
+</html>

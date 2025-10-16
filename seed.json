@@ -1,0 +1,64 @@
+{
+  "transactions": [
+    {
+      "id": "txn_0001",
+      "description": "Textbook for CS101",
+      "amount": 85.50,
+      "type": "expense",
+      "category": "Education",
+      "date": "2023-09-15",
+      "createdAt": "2023-09-15T10:30:00Z",
+      "updatedAt": "2023-09-15T10:30:00Z"
+    },
+    {
+      "id": "txn_0002",
+      "description": "Coffee with friends",
+      "amount": 8.75,
+      "type": "expense",
+      "category": "Entertainment",
+      "date": "2023-09-20",
+      "createdAt": "2023-09-20T14:00:00Z",
+      "updatedAt": "2023-09-20T14:00:00Z"
+    },
+    {
+      "id": "txn_0003",
+      "description": "Part-time job payment",
+      "amount": 250.00,
+      "type": "deposit",
+      "category": "Income",
+      "date": "2023-09-25",
+      "createdAt": "2023-09-25T08:15:00Z",
+      "updatedAt": "2023-09-25T08:15:00Z"
+    },
+    {
+      "id": "txn_0004",
+      "description": "Bus pass for month",
+      "amount": 45.00,
+      "type": "expense",
+      "category": "Transportation",
+      "date": "2023-09-28",
+      "createdAt": "2023-09-28T09:00:00Z",
+      "updatedAt": "2023-09-28T09:00:00Z"
+    },
+    {
+      "id": "txn_0005",
+      "description": "Groceries for week",
+      "amount": 65.25,
+      "type": "expense",
+      "category": "Food",
+      "date": "2023-09-30",
+      "createdAt": "2023-09-30T16:45:00Z",
+      "updatedAt": "2023-09-30T16:45:00Z"
+    }
+  ],
+  "settings": {
+    "baseCurrency": "USD",
+    "conversionRates": {
+      "rate1": 0.85,
+      "rate2": 1.35
+    },
+    "monthlyBudget": 500.00
+  },
+  "exportedAt": "2023-10-01T12:00:00Z",
+  "version": "1.0.0"
+}
